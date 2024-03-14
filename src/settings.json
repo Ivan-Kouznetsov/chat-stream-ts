@@ -1,5 +1,5 @@
 {
-  "defaultModel": "estopianmaid",
+  "defaultModel": "openchat",
   "defaults": {
     "stopWords": [
       "###",
@@ -40,7 +40,7 @@
     },
     {
       "name": "openchat",
-      "filePath": "/Volumes/MyBook/Downloads/openchat-3.5-0106.Q5_K_M.gguf",
+      "filePath": "/Users/ivankouznetsov/Downloads/models/openchat-3.5-0106.Q5_K_M.gguf",
       "stopWords": [
         "###",
         "### ",
@@ -56,28 +56,8 @@
       "seed": null
     },
     {
-      "name": "noro",
-      "filePath": "/Users/ivankouznetsov/Downloads/norocetacean-20b-10k.Q5_K_M.gguf",
-      "stopWords": [
-        "###",
-        "### ",
-        "User"
-      ],
-      "maxTokens": 5000,
-      "batchSize": 2000,
-      "contextSize": 2000,
-      "temperature": 0.9,
-      "topP": 0.9,
-      "topK": 100,
-      "seed": 1
-    },
-    {
-      "name": "luna",
-      "filePath": "/Users/ivankouznetsov/Downloads/luna-ai-llama2-uncensored.Q5_K_S.gguf"
-    },
-    {
       "name": "tinyllama",
-      "filePath": "/Users/ivankouznetsov/Downloads/tinyllama-1.1b-chat-v1.0.Q6_K.gguf",
+      "filePath": "/Users/ivankouznetsov/Downloads/models/tinyllama-1.1b-chat-v1.0.Q6_K.gguf",
       "seed": 1
     }
   ]
