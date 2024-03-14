@@ -129,7 +129,153 @@ describe("Utils tests", () => {
             expect(validateSettings(settings)).toEqual({ success: false, error: 'Invalid settings object' });
         });
 
-        // Add more test cases for other validation rules
+        it("should return failure if defaultModel is invalid", () => {
+            const settings = {
+                defaultModel: 123,
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: [
+                    {
+                        name: "model1",
+                        filePath: "/path/to/model1"
+                    }
+                ]
+            };
+
+            // @ts-ignore
+            expect(validateSettings(settings)).toEqual({ success: false, "error": "Invalid defaultModel" });
+        });
+
+        it("should return failure if defaultModel is invalid", () => {
+            const settings = {
+                defaultModel: "model1",
+                defaults: null,
+                models: [
+                    {
+                        name: "model1",
+                        filePath: "/path/to/model1"
+                    }
+                ]
+            };
+
+            // @ts-ignore
+            expect(validateSettings(settings)).toEqual({ success: false, "error": 'Invalid defaults object' });
+        });
+
+        it("should return failure if a default key is missing", () => {
+            const settings = {
+                defaultModel: "model1",
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    //    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: [
+                    {
+                        name: "model1",
+                        filePath: "/path/to/model1"
+                    }
+                ]
+            };
+
+            // @ts-ignore
+            expect(validateSettings(settings)).toEqual({ success: false, "error": 'Missing default key: contextSize' });
+        });
+
+        it("should return failure if there is an invalid models array'", () => {
+            const settings = {
+                defaultModel: "model1",
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: "model1"
+            };
+
+            // @ts-ignore
+            expect(validateSettings(settings)).toEqual({ success: false, "error": 'Invalid models array' });
+        });
+
+        test.each(['maxTokens', 'batchSize', 'contextSize', 'temperature', 'topP', 'topK', 'seed', 'stopWords', 'name', 'filePath'])("should return failure if there is an invalid %s", (key) => {
+            const settings = {
+                defaultModel: "model1",
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: [
+                    {
+                        name: "model1",
+                        filePath: "/path/to/model1",
+                        maxTokens: 200,
+                        batchSize: 64,
+                        contextSize: 5,
+                        temperature: 0.8,
+                        topP: 0.5,
+                        topK: 10,
+                        seed: 123,
+                        stopWords: ["the", "and"]
+                    }
+                ]
+            };
+
+            // @ts-ignore
+            settings.models[0][key] = Symbol('invalid');
+            const result = validateSettings(settings);
+
+            expect(result.success).toEqual(false);
+            expect(result.error).toContain(key);
+        });
+
+        test("should return failure if there is an invalid model", () => {
+            const settings = {
+                defaultModel: "model1",
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: [
+                    null
+                ]
+            };
+
+            // @ts-ignore
+            const result = validateSettings(settings);
+
+            expect(result.success).toEqual(false);
+            expect(result.error).toContain("model");
+        });
     });
 
     describe("readSettings", () => {
@@ -207,7 +353,5 @@ describe("Utils tests", () => {
             exitSpy.mockRestore();
 
         });
-
-        // Add more test cases for other scenarios
     });
 });
