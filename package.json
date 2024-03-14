@@ -2,9 +2,10 @@
   "name": "chat-stream-ts",
   "version": "1.0.0",
   "description": "A typeScript class for llama.cpp chat stream",
-  "main": "main.ts",
+  "main": "chatStream.ts",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "lint": "eslint . --ext .ts --fix"
   },
   "repository": {
     "type": "git",
@@ -13,7 +14,7 @@
   "keywords": [
     "node",
     "typescript",
-    "boilerplate"
+    "llm"
   ],
   "author": "Ivan Kouznetsov",
   "license": "MIT",
@@ -23,6 +24,9 @@
   "homepage": "https://github.com/Ivan-Kouznetsov/chat-stream-ts#readme",
   "devDependencies": {
     "@types/jest": "29.5.12",
+    "@typescript-eslint/eslint-plugin": "7.2.0",
+    "@typescript-eslint/parser": "7.2.0",
+    "eslint": "8.57.0",
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
     "typescript": "5.4.2"
