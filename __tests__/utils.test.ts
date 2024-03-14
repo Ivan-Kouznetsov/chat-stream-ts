@@ -1,0 +1,213 @@
+import { countRepeatedWords, readModelSettingsWithDefaults, validateSettings, readSettings } from '../src/utils';
+import fs from 'fs';
+
+jest.mock('fs');
+
+// Mock fs.readFileSync
+(fs.readFileSync as jest.Mock) = jest.fn().mockImplementation((path, options) => {
+    if (path === '/path/to/model1') {
+        return JSON.stringify("model text");
+    } else if (path === '/path/to/model2') {
+        return JSON.stringify("model text");
+    } else {
+        throw new Error(`Unrecognized path: ${path}`);
+    }
+});
+
+
+describe("Utils tests", () => {
+    describe("countRepeatedWords", () => {
+        it("should return the maximum count of repeated words in a string", () => {
+            const str = "hello hello world world world";
+            expect(countRepeatedWords(str)).toBe(2);
+        });
+
+        it("should return 0 if there are no repeated words", () => {
+            const str = "hello world";
+            expect(countRepeatedWords(str)).toBe(0);
+        });
+    });
+
+    describe("readModelSettingsWithDefaults", () => {
+        it("should merge model settings with default settings", () => {
+            const settings = {
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: [
+                    {
+                        name: "model1",
+                        filePath: "/path/to/model1",
+                        maxTokens: 200,
+                        batchSize: 64
+                    },
+                    {
+                        name: "model2",
+                        filePath: "/path/to/model2"
+                    }
+                ]
+            };
+
+            const expectedSettings = {
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: [
+                    {
+                        name: "model1",
+                        filePath: "/path/to/model1",
+                        maxTokens: 200,
+                        batchSize: 64,
+                        contextSize: 5,
+                        temperature: 0.8,
+                        topP: 0.5,
+                        topK: 10,
+                        seed: 123,
+                        stopWords: ["the", "and"]
+                    },
+                    {
+                        name: "model2",
+                        filePath: "/path/to/model2",
+                        maxTokens: 100,
+                        batchSize: 32,
+                        contextSize: 5,
+                        temperature: 0.8,
+                        topP: 0.5,
+                        topK: 10,
+                        seed: 123,
+                        stopWords: ["the", "and"]
+                    }
+                ]
+            };
+
+            expect(readModelSettingsWithDefaults(settings)).toEqual(expectedSettings);
+        });
+    });
+
+    describe("validateSettings", () => {
+        it("should return success if settings are valid", () => {
+            const settings = {
+                defaultModel: "model1",
+                defaults: {
+                    maxTokens: 100,
+                    batchSize: 32,
+                    contextSize: 5,
+                    temperature: 0.8,
+                    topP: 0.5,
+                    topK: 10,
+                    seed: 123,
+                    stopWords: ["the", "and"]
+                },
+                models: [
+                    {
+                        name: "model1",
+                        filePath: "/path/to/model1"
+                    }
+                ]
+            };
+
+            expect(validateSettings(settings)).toEqual({ success: true });
+        });
+
+        it("should return error if settings object is invalid", () => {
+            const settings = null;
+            // @ts-ignore
+            expect(validateSettings(settings)).toEqual({ success: false, error: 'Invalid settings object' });
+        });
+
+        // Add more test cases for other validation rules
+    });
+
+    describe("readSettings", () => {
+        it("should return the model settings for the specified model name", () => {
+            const settingsText = `{
+                "defaultModel": "model1",
+                "defaults": {
+                    "maxTokens": 100,
+                    "batchSize": 32,
+                    "contextSize": 5,
+                    "temperature": 0.8,
+                    "topP": 0.5,
+                    "topK": 10,
+                    "seed": 123,
+                    "stopWords": ["the", "and"]
+                },
+                "models": [
+                    {
+                        "name": "model1",
+                        "filePath": "/path/to/model1"
+                    },
+                    {
+                        "name": "model2",
+                        "filePath": "/path/to/model2"
+                    }
+                ]
+            }`;
+
+            const modelName = "model1";
+
+            const expectedModel = {
+                name: "model1",
+                filePath: "/path/to/model1",
+                maxTokens: 100,
+                batchSize: 32,
+                contextSize: 5,
+                temperature: 0.8,
+                topP: 0.5,
+                topK: 10,
+                seed: 123,
+                stopWords: ["the", "and"]
+            };
+
+            expect(readSettings(settingsText, modelName)).toEqual(expectedModel);
+        });
+
+        it("should throw an error if model name is not found", () => {
+            const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => {
+                throw new Error('process.exit was called');
+            });
+
+            const settingsText = `{
+                "defaultModel": "model1",
+                "defaults": {
+                    "maxTokens": 100,
+                    "batchSize": 32,
+                    "contextSize": 5,
+                    "temperature": 0.8,
+                    "topP": 0.5,
+                    "topK": 10,
+                    "seed": 123,
+                    "stopWords": ["the", "and"]
+                },
+                "models": [
+                    {
+                        "name": "model1",
+                        "filePath": "/path/to/model1"
+                    }
+                ]
+            }`;
+
+            const modelName = "model2";
+
+            expect(() => readSettings(settingsText, modelName)).toThrowError("process.exit was called");
+            exitSpy.mockRestore();
+
+        });
+
+        // Add more test cases for other scenarios
+    });
+});
