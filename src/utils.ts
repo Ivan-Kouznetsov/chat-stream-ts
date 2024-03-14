@@ -1,4 +1,4 @@
-import { Model, Settings, DefaultSettings } from './types'
+import { Model, Settings, DefaultSettings } from './types';
 import fs from 'fs';
 
 export const countRepeatedWords = (str: string) => {
@@ -14,12 +14,12 @@ export const countRepeatedWords = (str: string) => {
     }
 
     return maxCount - 1;
-}
+};
 
-export const readModelSettingsWithDefaults = (settings: { defaults: any; models: any[]; }) => {
+export const readModelSettingsWithDefaults = (settings: { defaults: Record<string, unknown>; models: Record<string, unknown>[]; }) => {
     const defaults = settings.defaults;
 
-    settings.models = settings.models.map((model: { [x: string]: any; }) => {
+    settings.models = settings.models.map((model) => {
         for (const key in defaults) {
             if (model[key] === undefined) {
                 model[key] = defaults[key];
@@ -29,7 +29,7 @@ export const readModelSettingsWithDefaults = (settings: { defaults: any; models:
     });
 
     return settings;
-}
+};
 type Validation = 
   | { success: true; error?: never }
   | { success: false; error: string };
@@ -68,35 +68,35 @@ export const validateSettings = (settings: Settings): Validation => {
             return { success: false, error: 'Invalid model name or name' };
         }
 
-        if (typeof model.stopWords !== "undefined" && (!Array.isArray(model.stopWords) || !model.stopWords.every((word: string) => typeof word === 'string'))) {
+        if (typeof model.stopWords !== 'undefined' && (!Array.isArray(model.stopWords) || !model.stopWords.every((word: string) => typeof word === 'string'))) {
             return { success: false, error: 'Invalid stopWords array' };
         }
 
-        if (typeof model.maxTokens !== "undefined" && typeof model.maxTokens !== 'number') {
+        if (typeof model.maxTokens !== 'undefined' && typeof model.maxTokens !== 'number') {
             return { success: false, error: 'Invalid maxTokens' };       
         }
 
-        if (typeof model.batchSize !== "undefined" && typeof model.batchSize !== 'number') {
+        if (typeof model.batchSize !== 'undefined' && typeof model.batchSize !== 'number') {
             return { success: false, error: 'Invalid batchSize' };
         }
 
-        if (typeof model.contextSize !== "undefined" && typeof model.contextSize !== 'number') {
+        if (typeof model.contextSize !== 'undefined' && typeof model.contextSize !== 'number') {
             return { success: false, error: 'Invalid contextSize' };
         }
 
-        if (typeof model.temperature !== "undefined" && typeof model.temperature !== 'number') {
+        if (typeof model.temperature !== 'undefined' && typeof model.temperature !== 'number') {
             return { success: false, error: 'Invalid temperature' };
         }
 
-        if (typeof model.topP !== "undefined" && typeof model.topP !== 'number') {
+        if (typeof model.topP !== 'undefined' && typeof model.topP !== 'number') {
             return { success: false, error: 'Invalid topP' };
         }
 
-        if (typeof model.topK !== "undefined" && typeof model.topK !== 'number') {
+        if (typeof model.topK !== 'undefined' && typeof model.topK !== 'number') {
             return { success: false, error: 'Invalid topK' };
         }
 
-        if (typeof model.seed !== "undefined" && model.seed!=null && (typeof model.seed !== 'number' || model.seed < 0)) {
+        if (typeof model.seed !== 'undefined' && model.seed!=null && (typeof model.seed !== 'number' || model.seed < 0)) {
             return { success: false, error: 'Invalid seed' };
         }
 
@@ -107,7 +107,7 @@ export const validateSettings = (settings: Settings): Validation => {
     }
 
     return { success: true };
-}
+};
 
 export const readSettings = (settingsText: string, modelName: string) => {
     try {
@@ -147,4 +147,4 @@ export const readSettings = (settingsText: string, modelName: string) => {
         console.log('Error reading settings.json', e);
         process.exit(1);
     }
-}
+};

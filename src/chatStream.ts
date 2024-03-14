@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { LlamaModel, LlamaContext, LlamaChatSession, ConversationInteraction } from "node-llama-cpp";
+import { LlamaModel, LlamaContext, LlamaChatSession, ConversationInteraction } from 'node-llama-cpp';
 import { readSettings } from './utils.js';
 
 export class Chat {
@@ -22,7 +22,7 @@ export class Chat {
         const { contextSize, batchSize, topK, topP, maxTokens, temperature, stopWords, seed, filePath: modelPath } = readSettings(fs.readFileSync('settings.json', 'utf8'), modelName);
        
         if (!contextSize || !batchSize || !topK || !topP || !maxTokens || !temperature || !stopWords || !modelPath) {
-            throw new Error("One or more required variables are undefined.");
+            throw new Error('One or more required variables are undefined.');
         }
         
         this.topK = topK;
@@ -34,14 +34,14 @@ export class Chat {
         const model = new LlamaModel({
             modelPath
         });
-        if (!batchSize) throw new Error("Batch size is required");
+        if (!batchSize) throw new Error('Batch size is required');
 
         this.context = new LlamaContext({ model, contextSize, batchSize, seed });
         this.session = new LlamaChatSession({ context: this.context, systemPrompt });
     }
 
     async generateResponse(userInput: string, modelOutput: (s: string) => void, endStream: () => void) {
-        let thisInteraction: ConversationInteraction = { prompt: userInput, response: "" };
+        const thisInteraction: ConversationInteraction = { prompt: userInput, response: '' };
         let stop = false;
         const response = await this.session.prompt(userInput, {
             onToken: (chunk: number[]) => {
