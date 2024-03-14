@@ -77,7 +77,8 @@
     },
     {
       "name": "tinyllama",
-      "filePath": "/Users/ivankouznetsov/repos/story/__tests__/fixtures/tinyllama-1.1b-chat-v1.0.Q6_K.gguf"
+      "filePath": "/Users/ivankouznetsov/Downloads/tinyllama-1.1b-chat-v1.0.Q6_K.gguf",
+      "seed": 1
     }
   ]
 }

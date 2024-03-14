@@ -5,7 +5,7 @@ import { Chat } from './chatStream';
 
 (async () => {
     if (process.argv.length < 4) {
-        console.error('Usage: node story.js <model-path> <system-prompt>');
+        console.error('Usage: node chat.js <model-name> <system-prompt>');
         process.exit(1);
     }
     const useVoice = process.argv.includes('--voice');

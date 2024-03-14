@@ -5,12 +5,14 @@
   "main": "chatStream.ts",
   "type": "module",
   "scripts": {
-    "test": "rm -rf dist && export NODE_OPTIONS=\"--experimental-vm-modules\" && jest --coverage",
+    "clean": "rm -rf dist",
+    "test": "npm run clean && export NODE_OPTIONS=\"--experimental-vm-modules\" && jest --coverage",
     "lint": "eslint ./src --ext .ts --fix",
     "prepare": "husky",
     "chat": "npm run build && cd dist/src && node chat.js tinyllama \"you are a friendly chat partner\"",
+    "int-test": "npm run build && cd dist/src && node single.js tinyllama \"\" \"what is 2+2?\" >> int-test.log && grep -q \"4\" int-test.log && echo \"int test OK\" || echo \"int test FAILED\"",
     "copy-files": "ncp src/settings.json dist/src/settings.json",
-    "build": "rm -rf dist && tsc && npm run copy-files && node updateImports.js"
+    "build": "npm run clean && tsc && npm run copy-files && node updateImports.js"
   },
   "repository": {
     "type": "git",

@@ -1,3 +1,4 @@
 npm test
 npm run lint
 node checkPackageVersions.js
+npm run int-test
