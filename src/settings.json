@@ -1,0 +1,83 @@
+{
+  "defaultModel": "estopianmaid",
+  "defaults": {
+    "stopWords": [
+      "###",
+      "User"
+    ],
+    "maxTokens": 4000,
+    "batchSize": 4000,
+    "contextSize": 4000,
+    "temperature": 0.9,
+    "topP": 0.9,
+    "topK": 100,
+    "seed": null
+  },
+  "models": [
+    {
+      "name": "estopianmaid",
+      "filePath": "/Volumes/MyBook/Downloads/estopianmaid-13b.Q6_K.gguf",
+      "stopWords": [
+        "###",
+        "### ",
+        "User"
+      ],
+      "maxTokens": 4000,
+      "batchSize": 4000,
+      "contextSize": 4000
+    },
+    {
+      "name": "kimiko",
+      "filePath": "/Volumes/MyBook/Downloads/mythalion-kimiko-v2.Q6_K.gguf",
+      "stopWords": [
+        "###",
+        "### ",
+        "User"
+      ],
+      "maxTokens": 4000,
+      "batchSize": 4000,
+      "contextSize": 4000
+    },
+    {
+      "name": "openchat",
+      "filePath": "/Volumes/MyBook/Downloads/openchat-3.5-0106.Q5_K_M.gguf",
+      "stopWords": [
+        "###",
+        "### ",
+        "User",
+        "***"
+      ],
+      "maxTokens": 8000,
+      "batchSize": 8000,
+      "contextSize": 8000,
+      "temperature": 0.9,
+      "topP": 0.9,
+      "topK": 100,
+      "seed": null
+    },
+    {
+      "name": "noro",
+      "filePath": "/Users/ivankouznetsov/Downloads/norocetacean-20b-10k.Q5_K_M.gguf",
+      "stopWords": [
+        "###",
+        "### ",
+        "User"
+      ],
+      "maxTokens": 5000,
+      "batchSize": 2000,
+      "contextSize": 2000,
+      "temperature": 0.9,
+      "topP": 0.9,
+      "topK": 100,
+      "seed": 1
+    },
+    {
+      "name": "luna",
+      "filePath": "/Users/ivankouznetsov/Downloads/luna-ai-llama2-uncensored.Q5_K_S.gguf"
+    },
+    {
+      "name": "tinyllama",
+      "filePath": "/Users/ivankouznetsov/repos/story/__tests__/fixtures/tinyllama-1.1b-chat-v1.0.Q6_K.gguf"
+    }
+  ]
+}
