@@ -64,8 +64,8 @@ export const validateSettings = (settings: Settings): Validation => {
             return { success: false, error: 'Invalid model object' };
         }
 
-        if (typeof model.name !== 'string' || typeof model.filePath !== 'string') {
-            return { success: false, error: 'Invalid model name or filePath' };
+        if (typeof model.name !== 'string') {
+            return { success: false, error: 'Invalid model name or name' };
         }
 
         if (typeof model.stopWords !== "undefined" && (!Array.isArray(model.stopWords) || !model.stopWords.every((word: string) => typeof word === 'string'))) {
@@ -125,12 +125,23 @@ export const readSettings = (settingsText: string, modelName: string) => {
             }
         }
 
-         for (const key of requiredKeys) {
+        // #region asserting that all required keys are present in the model object for TypeScript inference
+        /**
+         * This block is here for TypeScript to know that all required keys are present in the model object.
+         * This is because the requiredKeys array is a string array and TypeScript doesn't know that all the keys in the array are present in the model object.
+         * It should not actually throw an error because we have already checked that all required keys are present in the model object.
+         */
+        /* istanbul ignore */
+        for (const key of requiredKeys) {
+            /* istanbul ignore next */ 
             if (model[key as keyof Model] === undefined) {
+                /* istanbul ignore next */ 
                 throw new Error(`Missing required key in model: ${key}`);
             }
         }
         
+        //#endregion
+
         return model;
     } catch (e) {
         console.log('Error reading settings.json', e);
