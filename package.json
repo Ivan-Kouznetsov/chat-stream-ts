@@ -4,7 +4,7 @@
   "description": "A typeScript class for llama.cpp chat stream",
   "main": "main.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",
