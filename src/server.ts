@@ -3,25 +3,33 @@ import { PassThrough } from 'stream';
 import { Chat } from './chatStream';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import os from 'os';
+
+const networkInterfaces = os.networkInterfaces();
+if (!networkInterfaces) {
+    throw new Error('Unable to get network interfaces');
+}
+
+const localIP = (process.platform === 'darwin' ? networkInterfaces['en0'] : networkInterfaces['eth0'])?.filter((details) => details.family === 'IPv4')[0]?.address;
+const ip = localIP || 'localhost';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const server = express();
 
-if (process.argv.length < 5) {
-    console.error('Usage: node server.js <ip> <port> <model-name> <system-prompt>');
+if (process.argv.length < 4) {
+    console.error('Usage: node server.js <port> <model-name> <system-prompt>');
     process.exit(1);
 }
 
-const ip = process.argv[2];
-const port = parseInt(process.argv[3]);
+const port = parseInt(process.argv[2]);
 if (isNaN(port)) {
     console.error('Port must be a valid number');
     process.exit(1);
 }
-const modelName = process.argv[4];
-const systemPrompt = process.argv[5];
+const modelName = process.argv[3];
+const systemPrompt = process.argv[4];
 
 const chat = new Chat(modelName, systemPrompt);
 

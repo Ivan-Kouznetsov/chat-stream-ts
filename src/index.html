@@ -13,10 +13,14 @@
     <script>
         $(document).ready(function(){
             $("#send").click(function(){
+                $("#message").attr("disabled", true);
+                $("#send").attr("disabled", true);
                 var message = $("#message").val();
-                $.get(`http://localhost:3000/chat?prompt=${message}`, function(data, status){
+                $.get(`/chat?prompt=${message}`, function(data, status){
                     $("#chat").append(`<p>${data}</p>`);
                     $("#message").val('');
+                    $("#message").attr("disabled", false);
+                    $("#send").attr("disabled", false);
                 });
             });
         });
