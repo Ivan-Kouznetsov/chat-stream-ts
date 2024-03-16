@@ -3,10 +3,17 @@
   "version": "1.0.0",
   "description": "A typeScript class for llama.cpp chat stream",
   "main": "chatStream.ts",
+  "type": "module",
   "scripts": {
-    "test": "jest --coverage",
-    "lint": "eslint . --ext .ts --fix",
-    "prepare": "husky"
+    "clean": "rm -rf dist",
+    "test": "npm run clean && export NODE_OPTIONS=\"--experimental-vm-modules\" && jest --coverage",
+    "lint": "eslint ./src --ext .ts --fix",
+    "prepare": "husky",
+    "chat": "npm run build && cd dist/src && node chat.js tinyllama \"you are a friendly chat partner\"",
+    "int-test": "npm run build && cd dist/src && node single.js tinyllama \"\" \"what is 2+2?\" >> int-test.log && grep -q \"4\" int-test.log && echo \"int test OK\" || echo \"int test FAILED\"",
+    "test-server": "npm run build && cd dist/src && node server.js 3000 openchat \"You are a helpful assitant\"",
+    "copy-files": "ncp src/settings.json dist/src/settings.json && ncp src/index.html dist/src/index.html",
+    "build": "npm run clean && tsc && npm run copy-files && node updateImports.js"
   },
   "repository": {
     "type": "git",
@@ -24,16 +31,20 @@
   },
   "homepage": "https://github.com/Ivan-Kouznetsov/chat-stream-ts#readme",
   "devDependencies": {
+    "@types/express": "4.17.21",
     "@types/jest": "29.5.12",
     "@typescript-eslint/eslint-plugin": "7.2.0",
     "@typescript-eslint/parser": "7.2.0",
     "eslint": "8.57.0",
     "husky": "9.0.11",
+    "ncp": "2.0.0",
     "ts-jest": "29.1.2",
     "ts-node": "10.9.2",
     "typescript": "5.4.2"
   },
   "dependencies": {
-    "node-llama-cpp": "2.8.8"
+    "express": "4.18.3",
+    "node-llama-cpp": "2.8.8",
+    "say": "0.16.0"
   }
 }

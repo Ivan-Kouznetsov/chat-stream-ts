@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Server</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Chat Server</h1>
+    <input type="text" id="message" placeholder="Type your message here">
+    <button id="send">Send</button>
+    <div id="chat"></div>
+
+    <script>
+        $(document).ready(function(){
+            $("#send").click(function(){
+                $("#message").attr("disabled", true);
+                $("#send").attr("disabled", true);
+                var message = $("#message").val();
+                $.get(`/chat?prompt=${message}`, function(data, status){
+                    $("#chat").append(`<p>${data}</p>`);
+                    $("#message").val('');
+                    $("#message").attr("disabled", false);
+                    $("#send").attr("disabled", false);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

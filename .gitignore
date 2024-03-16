@@ -1,6 +1,9 @@
 # todo
 todo.txt
 
+# Certs
+*.pem
+
 # Logs
 logs
 *.log

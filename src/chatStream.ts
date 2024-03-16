@@ -1,18 +1,18 @@
 import fs from 'fs';
 import { LlamaModel, LlamaContext, LlamaChatSession, ConversationInteraction } from 'node-llama-cpp';
-import { readSettings } from './utils.js';
+import { readSettings } from './utils';
 
 export class Chat {
-    modelName: string;
-    systemPrompt: string;
-    conversationHistory: ConversationInteraction[];
-    topK: number;
-    topP: number;
-    maxTokens: number;
-    temperature: number;
-    stopWords: string[];
-    context: LlamaContext;
-    session: LlamaChatSession;
+    private modelName: string;
+    private systemPrompt: string;
+    private conversationHistory: ConversationInteraction[];
+    private topK: number;
+    private topP: number;
+    private maxTokens: number;
+    private temperature: number;
+    private stopWords: string[];
+    private context: LlamaContext;
+    private session: LlamaChatSession;
 
     constructor(modelName: string, systemPrompt: string) {
         this.modelName = modelName;
@@ -40,7 +40,7 @@ export class Chat {
         this.session = new LlamaChatSession({ context: this.context, systemPrompt });
     }
 
-    async generateResponse(userInput: string, modelOutput: (s: string) => void, endStream: () => void) {
+    public async generateResponse(userInput: string, modelOutput: (s: string) => void, endStream: () => void) {
         const thisInteraction: ConversationInteraction = { prompt: userInput, response: '' };
         let stop = false;
         const response = await this.session.prompt(userInput, {
@@ -50,8 +50,7 @@ export class Chat {
                 if (stop) return;
 
                 thisInteraction.response += token;
-                process.stdout.write(token);
-
+                
                 modelOutput(token);
             },
             maxTokens: this.maxTokens,
@@ -65,6 +64,14 @@ export class Chat {
         // reset session with conversation history 
         this.session = new LlamaChatSession({ context: this.context, systemPrompt: this.systemPrompt, conversationHistory: this.conversationHistory });
         return response;
+    }
+
+    public getConversationHistory() {
+        return this.conversationHistory;
+    }
+
+    public getModelName() {
+        return this.modelName;
     }
 }
 
