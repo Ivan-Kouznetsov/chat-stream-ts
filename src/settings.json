@@ -45,7 +45,8 @@
         "###",
         "### ",
         "User",
-        "***"
+        "**",
+        "ChatGPT"
       ],
       "maxTokens": 8000,
       "batchSize": 8000,

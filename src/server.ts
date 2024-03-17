@@ -1,5 +1,4 @@
 import express from 'express';
-import { PassThrough } from 'stream';
 import { Chat } from './chatStream';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -42,17 +41,13 @@ server.get('/chat', (req, res) => {
         return res.status(400).send('Invalid prompt query parameter');
     }
 
-    const stream = new PassThrough();
+    chat.generateResponse(prompt).then(response => {
+        res.send(response);
+    }).catch(err => {
+        console.error(err);
+        res.status(500).send('An error occurred while generating the chat response');
+    });
 
-    chat.generateResponse(prompt, (token) => {
-        stream.push(token);
-    }, () => { stream.end(); })
-        .catch(err => {
-            console.error(err);
-            res.status(500).send('An error occurred while generating the chat response');
-        });
-
-    stream.pipe(res);
 });
 
 server.get('/', (req, res) => {

@@ -40,29 +40,34 @@ export class Chat {
         this.session = new LlamaChatSession({ context: this.context, systemPrompt });
     }
 
-    public async generateResponse(userInput: string, modelOutput: (s: string) => void, endStream: () => void) {
+    public async generateResponse(userInput: string) {
         const thisInteraction: ConversationInteraction = { prompt: userInput, response: '' };
-        let stop = false;
+      
         const response = await this.session.prompt(userInput, {
             onToken: (chunk: number[]) => {
                 const token = this.context.decode(chunk);
-                stop = this.stopWords.some((stopWord: string) => token.trim().startsWith(stopWord));
-                if (stop) return;
-
                 thisInteraction.response += token;
                 
-                modelOutput(token);
+                this.stopWords.forEach((word) => {
+                    const index = thisInteraction.response.indexOf(word);
+                    if (index !== -1) {
+                        thisInteraction.response = thisInteraction.response.slice(0, index);
+                    }
+                });
+               
             },
             maxTokens: this.maxTokens,
             temperature: this.temperature,
             topK: this.topK,
             topP: this.topP
         });
-        stop = false;
-        endStream();
+    
+      
         this.conversationHistory.push(thisInteraction);
-        // reset session with conversation history 
+        // reset session with conversation history
+              
         this.session = new LlamaChatSession({ context: this.context, systemPrompt: this.systemPrompt, conversationHistory: this.conversationHistory });
+       
         return response;
     }
 
