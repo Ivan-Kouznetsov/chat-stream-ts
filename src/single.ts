@@ -12,6 +12,6 @@ import { Chat } from './chatStream';
     
     const chat = new Chat(modelName, systemPrompt);
     
-    const lastResponse = await chat.generateResponse(userInput, () => {}, () => {});
+    const lastResponse = await chat.generateResponse(userInput);
     console.log(lastResponse);
 })();

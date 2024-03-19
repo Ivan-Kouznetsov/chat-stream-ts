@@ -31,6 +31,8 @@ export class Chat {
         this.temperature = temperature;
         this.stopWords = stopWords;
 
+        if (systemPrompt.length > 0) this.stopWords.push(systemPrompt);
+
         const model = new LlamaModel({
             modelPath
         });
@@ -40,30 +42,46 @@ export class Chat {
         this.session = new LlamaChatSession({ context: this.context, systemPrompt });
     }
 
-    public async generateResponse(userInput: string, modelOutput: (s: string) => void, endStream: () => void) {
+    public async generateResponse(userInput: string) {
         const thisInteraction: ConversationInteraction = { prompt: userInput, response: '' };
+        const responseAbortController = new AbortController();        
         let stop = false;
-        const response = await this.session.prompt(userInput, {
-            onToken: (chunk: number[]) => {
-                const token = this.context.decode(chunk);
-                stop = this.stopWords.some((stopWord: string) => token.trim().startsWith(stopWord));
-                if (stop) return;
-
-                thisInteraction.response += token;
+        try{
+            await this.session.prompt(userInput, {
+                signal: responseAbortController.signal,
+                onToken: (chunk: number[]) => {
+                    if (stop) return;
+                    const token = this.context.decode(chunk);
+                    thisInteraction.response += token;
                 
-                modelOutput(token);
-            },
-            maxTokens: this.maxTokens,
-            temperature: this.temperature,
-            topK: this.topK,
-            topP: this.topP
-        });
-        stop = false;
-        endStream();
+                    this.stopWords.forEach((word) => {
+                        
+                        const index = thisInteraction.response.indexOf(word);
+                        if (index !== -1) {
+                            thisInteraction.response = thisInteraction.response.slice(0, index);
+                            stop = true;
+                            responseAbortController.abort();
+                        }
+                    });
+                },
+                maxTokens: this.maxTokens,
+                temperature: this.temperature,
+                topK: this.topK,
+                topP: this.topP
+            });
+        }catch{
+            if (process.env.NODE_ENV === 'development') {
+                console.log('Response generation aborted');
+            }            
+        }
+        
+        thisInteraction.response = thisInteraction.response.trim();
         this.conversationHistory.push(thisInteraction);
-        // reset session with conversation history 
+        // reset session with conversation history
+              
         this.session = new LlamaChatSession({ context: this.context, systemPrompt: this.systemPrompt, conversationHistory: this.conversationHistory });
-        return response;
+       
+        return thisInteraction.response;
     }
 
     public getConversationHistory() {
@@ -74,6 +92,3 @@ export class Chat {
         return this.modelName;
     }
 }
-
-// Usage:
-//const chat = new Chat('openchat', 'You are a friendly assistant named May. You like to chat with the User.');

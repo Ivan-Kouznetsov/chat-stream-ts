@@ -21,7 +21,11 @@
                     $("#message").val('');
                     $("#message").attr("disabled", false);
                     $("#send").attr("disabled", false);
-                });
+                }).fail(function(){
+                    $("#chat").append(`<p>Server error</p>`);
+                    $("#message").attr("disabled", false);
+                    $("#send").attr("disabled", false);
+                })
             });
         });
     </script>

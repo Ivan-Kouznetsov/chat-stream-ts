@@ -42,8 +42,9 @@ import { Chat } from './chatStream';
             continue;
         }
 
-        const lastResponse = await chat.generateResponse(userInput, (s: string) => process.stdout.write(s), () => process.stdout.write('\n'));
+        const lastResponse = await chat.generateResponse(userInput);
+        console.info(lastResponse);
         if (useVoice) say.speak(lastResponse);
-        if (showWordCount) console.log('\nWord Count:', lastResponse.split('\n').join(' ').split(' ').length);      
+        if (showWordCount) console.info('\nWord Count:', lastResponse.split('\n').join(' ').split(' ').length);      
     }
 })();
