@@ -15,20 +15,9 @@
   },
   "models": [
     {
-      "name": "estopianmaid",
-      "filePath": "/Volumes/MyBook/Downloads/estopianmaid-13b.Q6_K.gguf",
-      "stopWords": [
-        "###",
-        "### ",
-        "User"
-      ],
-      "maxTokens": 4000,
-      "batchSize": 4000,
-      "contextSize": 4000
-    },
-    {
       "name": "kimiko",
-      "filePath": "/Volumes/MyBook/Downloads/mythalion-kimiko-v2.Q6_K.gguf",
+      "description": "A model for chatting in-character based on the system prompt",
+      "filePath": "/Users/ivankouznetsov/Downloads/models/mythalion-kimiko-v2.Q6_K.gguf",
       "stopWords": [
         "###",
         "### ",
@@ -40,6 +29,7 @@
     },
     {
       "name": "openchat",
+      "description": "A model for general chat, similar to ChatGPT",
       "filePath": "/Users/ivankouznetsov/Downloads/models/openchat-3.5-0106.Q5_K_M.gguf",
       "stopWords": [
         "###",
@@ -58,6 +48,7 @@
     },
     {
       "name": "tinyllama",
+      "description": "A small model that is generally bad, but can be used for integration testing purposes",
       "filePath": "/Users/ivankouznetsov/Downloads/models/tinyllama-1.1b-chat-v1.0.Q6_K.gguf",
       "seed": 1
     }
