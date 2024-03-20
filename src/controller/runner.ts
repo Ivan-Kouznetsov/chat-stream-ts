@@ -15,13 +15,6 @@ process.on('message', (message: {functionName: string, args: never[]}) => {
         process.send?.('Initialized');      
         break;
     case 'generateResponse':
-        // #region debug code
-        if (message.args[0]==='')
-        {
-            process.send?.({response: '', history: chat?.getConversationHistory()});
-            return;
-        }
-        // #endregion
         chat?.generateResponse(message.args[0]).then((response) => {
             process.send?.({response, history: chat?.getConversationHistory()});
         });
