@@ -37,7 +37,8 @@ const start = async () => {
                 child.kill('SIGTERM');
                 child.unref();            
 
-                running = false;                
+                running = false;
+                process.stdin.removeAllListeners();             
             }
         }
     });
