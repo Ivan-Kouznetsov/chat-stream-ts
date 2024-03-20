@@ -9,7 +9,7 @@ function readDirectory(directoryPath) {
 }
 
 function updateImportStatements(content) {
-    const regex = /import\s+(?:[^'"]+\s+from\s+)?['"](\.\/[^'"]+)['"]/g;
+    const regex = /import\s+(?:[^'"]+\s+from\s+)?['"](\.+\/[^'"]+)['"]/g;
     return content.replace(regex, (match, p1) => {
         if (!p1.endsWith('.js')) {
             console.log(`Updating import statement: ${p1}`);

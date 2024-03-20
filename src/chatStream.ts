@@ -14,10 +14,10 @@ export class Chat {
     private context: LlamaContext;
     private session: LlamaChatSession;
 
-    constructor(modelName: string, systemPrompt: string) {
+    constructor(modelName: string, systemPrompt: string, conversationHistory: ConversationInteraction[] = []) {
         this.modelName = modelName;
         this.systemPrompt = systemPrompt;
-        this.conversationHistory = [];      
+        this.conversationHistory = conversationHistory;      
 
         const { contextSize, batchSize, topK, topP, maxTokens, temperature, stopWords, seed, filePath: modelPath } = readSettings(fs.readFileSync('settings.json', 'utf8'), modelName);
        
