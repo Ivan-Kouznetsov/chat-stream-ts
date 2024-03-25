@@ -1,0 +1,65 @@
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+}
+
+h1 {
+    font-family: Perpetua, Baskerville, Big Caslon, Palatino Linotype, Palatino, serif;
+    font-size: 2em;
+    margin-bottom: 10px;
+    font-weight: normal;
+}
+
+.bubble {
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    display: block;
+    font-family: Perpetua, Baskerville, Big Caslon, Palatino Linotype, Palatino, serif;
+    color: #e0e0e0;
+}
+
+.speech-bubble {
+    background-color: #346699; /* Darker colour for dark mode */
+}
+
+.user-bubble {
+    background-color: #166c55; /* Darker colour for dark mode */
+}
+
+.loader {
+    margin-left: 25px;
+    width: 10px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    animation: l5 1s infinite linear alternate;
+    margin-bottom: 10px;
+}
+@keyframes l5 {
+    0%  {box-shadow: 20px 0 #fff, -20px 0 #ccc; background: #fff }
+    33% {box-shadow: 20px 0 #fff, -20px 0 #ccc; background: #ccc }
+    66% {box-shadow: 20px 0 #ccc, -20px 0 #fff; background: #ccc }
+    100%{box-shadow: 20px 0 #ccc, -20px 0 #fff; background: #fff }
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+    display: block;
+    width: 100%;            
+}
+
+input {
+    box-sizing: border-box;
+    padding: 10px 20px; 
+    border-radius: 5px;
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+    background-color: #424242; /* Dark background for inputs */
+    color: #e0e0e0; /* Light text for inputs */
+}
