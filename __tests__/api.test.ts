@@ -5,7 +5,7 @@ describe('API', () => {
     const url = `http://${process.env.LOCAL_IP}:${process.env.LOCAL_PORT}`;
 
     it('should return 200', async () => {
-        const response = await fetch(`${url}/chat?prompt=hello`);
+        const response = await fetch(`${url}/api/chat?prompt=hello`);
         expect(response.status).toBe(200);
     });
 
@@ -13,7 +13,7 @@ describe('API', () => {
         for (let i = 0; i < 10; i++) {
             console.log(`${Date.now()} Request ${i}`);
             const prompt = encodeURIComponent('write a story about a cat and a dog');
-            const response = await fetch(`${url}/chat?prompt=${prompt}`);
+            const response = await fetch(`${url}/api/chat?prompt=${prompt}`);
             const responseBody = await response.text();
             
             expect(responseBody).toBeTruthy();

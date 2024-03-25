@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Server</title>
+    <style>
+        .bubble {
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .speech-bubble {
+            background-color: #77afe8;
+        }
+        
+        .user-bubble {
+            background-color: #e877af;
+        }
+
+        .loader {
+            margin-left: 25px;
+            width: 10px;
+            aspect-ratio: 1;
+            border-radius: 50%;
+            animation: l5 1s infinite linear alternate;
+            margin-bottom: 10px;
+        }
+        @keyframes l5 {
+            0%  {box-shadow: 20px 0 #000, -20px 0 #0002;background: #000 }
+            33% {box-shadow: 20px 0 #000, -20px 0 #0002;background: #0002}
+            66% {box-shadow: 20px 0 #0002,-20px 0 #000; background: #0002}
+            100%{box-shadow: 20px 0 #0002,-20px 0 #000; background: #000 }
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer;
+            display: block;
+            width: 100%;            
+        }
+        input {
+            box-sizing: border-box;
+            padding: 10px 20px; 
+            border-radius: 5px;
+            display: block;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>Chat Server</h1>
+    <div id="chat"></div>
+    <input type="text" id="message" placeholder="Type your message here" onkeydown="handleKeyDown(event)">
+    <button id="send">Send</button>
+
+    <script>
+        function handleKeyDown(event) {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            $("#message").attr("disabled", true);
+            $("#send").attr("disabled", true);
+            var message = $("#message").val();
+            $("#chat").append(`<div class="bubble user-bubble">${message}</div>`);
+            $("#chat").append(`<div class="loader"></div>`);
+            $.get(`/api/chat?prompt=${message}`, function(data, status){
+                $(".loader").remove();
+                $("#chat").append(`<div class="bubble speech-bubble">${data}</div>`);
+                $("#message").val('');
+                $("#message").attr("disabled", false);
+                $("#send").attr("disabled", false);
+            }).fail(function(){
+                $(".loader").remove();
+                $("#chat").append(`<div class="bubble speech-bubble">Server error</div>`);
+                $("#message").attr("disabled", false);
+                $("#send").attr("disabled", false);
+            })
+            
+        }
+
+        $(document).ready(function(){
+            $("#send").click(sendMessage);
+        });
+    </script>
+   
+</body>
+</html>

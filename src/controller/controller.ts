@@ -4,6 +4,12 @@ import { ConversationInteraction } from 'node-llama-cpp';
 import express, {  Response } from 'express';
 
 import os from 'os';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(dirname(__filename));
 
 const networkInterfaces = os.networkInterfaces();
 if (!networkInterfaces) {
@@ -14,6 +20,7 @@ const localIP = (process.platform === 'darwin' ? networkInterfaces['en0'] : netw
 const ip = localIP || 'localhost';
 
 const server = express();
+server.use(express.static(path.join(__dirname, 'public_html')));
 
 const modelName = process.argv[2];
 const systemPrompt = process.argv[3];
@@ -78,7 +85,7 @@ const start = async () => {
     }
 
     if (isServer) {
-        server.get('/chat', (req, res) => {
+        server.get('/api/chat', (req, res) => {
             if (child === undefined) throw new Error('Child process is not defined');
             const { prompt } = req.query;
 
