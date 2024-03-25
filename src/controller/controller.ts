@@ -53,7 +53,11 @@ const start = async () => {
             console.info(msg.response);
             process.stdout.write('\n> ');
         } else if (msg === 'Initialized') {
-            process.stdout.write('\n> ');
+            if (isServer) {
+                console.info(`Server listening at http://${ip}:${port}`);
+            } else {
+                process.stdout.write('\n> ');
+            }
         }
     });
 
@@ -89,7 +93,7 @@ const start = async () => {
         });
 
         server.listen(port, ip, () => {
-            console.log(`Server listening at http://${ip}:${port}`);
+            console.info(`Server listening at http://${ip}:${port}`);
         });
     } else {
         // #region Chat loop
