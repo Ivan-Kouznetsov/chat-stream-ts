@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-describe.skip('API', () => {
+describe('API', () => {
     const url = `http://${process.env.LOCAL_IP}:${process.env.LOCAL_PORT}`;
 
     it('should return 200', async () => {
