@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Chat Server</title>
     <link id="stylesheet" rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/dark-mode-toggle.css">
     <script src="js/jquery.min.js"></script>
 </head>
-<body style="max-width:300px">
+<body>
     <!-- Light/Dark Toggle -->
     <label class="ui-switch">
         <input type="checkbox" id="dark-mode-toggle">
@@ -44,8 +45,11 @@
             $("#message").attr("disabled", true);
             $("#send").attr("disabled", true);
             var message = $("#message").val();
-            $("#chat").append(`<div class="bubble user-bubble">${message}</div>`);
-            $("#chat").append(`<div class="loader"></div>`);
+
+            if ($("#chat").find(".loader").length === 0) {
+                $("#chat").append(`<div class="bubble user-bubble">${message}</div>`);        
+                $("#chat").append(`<div class="loader"></div>`);
+            }
 
             $.get(`/api/chat?prompt=${message}`, function(data, status){
                 $(".loader").remove();
@@ -53,11 +57,16 @@
                 $("#message").val('');
                 $("#message").attr("disabled", false);
                 $("#send").attr("disabled", false);
-            }).fail(function(){
-                $(".loader").remove();
-                $("#chat").append(`<div class="bubble speech-bubble">Server error</div>`);
-                $("#message").attr("disabled", false);
-                $("#send").attr("disabled", false);
+                $("#message").select();
+            }).fail(function(xhr){
+                if (xhr.status === 429) {
+                    setTimeout(sendMessage, 1000); // Retry after 1 second
+                } else {
+                    $(".loader").remove();
+                    $("#chat").append(`<div class="bubble speech-bubble">Server error</div>`);
+                    $("#message").attr("disabled", false);
+                    $("#send").attr("disabled", false);
+                }
             });            
         }
 

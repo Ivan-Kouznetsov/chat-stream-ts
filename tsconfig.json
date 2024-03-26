@@ -11,5 +11,6 @@
       "noImplicitAny": true,
       "strictNullChecks": true
     },
-    "lib": ["es2020", "node"]
+    "lib": ["es2020", "node"],
+    "exclude": ["__tests__"]
   }
