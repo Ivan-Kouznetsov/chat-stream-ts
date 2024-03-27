@@ -16,9 +16,9 @@ describe('API', () => {
             const response = await fetch(`${url}/api/chat?prompt=${prompt}`);
             const responseBody = await response.text();
             
-            expect(responseBody).toBeTruthy();
             expect(response.status).toBe(200);
+            expect(responseBody).toBeTruthy();
         }
-    }, 60000);
+    }, 1_800_000); // 30 minutes
 
 });

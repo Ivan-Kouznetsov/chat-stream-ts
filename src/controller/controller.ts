@@ -26,6 +26,7 @@ const modelName = process.argv[2];
 const systemPrompt = process.argv[3];
 const isServer = process.argv[4] === '--server';
 const port = 3000;
+let serverRunning = false;
 
 let currentResponse: Response | undefined = undefined;
 let child: ChildProcess | undefined = undefined;
@@ -35,12 +36,13 @@ let userInput = '';
 const start = async () => {
     let running = true;
 
+    if (serverRunning && currentResponse) {
+        currentResponse.status(429).send('Try again later');
+    }
+
     child = fork('./controller/runner.js');
     child.removeAllListeners();
-
-    child.send({ functionName: 'init', args: [modelName, systemPrompt, history.length >= 2 ? [history[0], history[history.length - 1]] : []] });
-    if (userInput.length > 0) child.send({ functionName: 'generateResponse', args: [userInput] }); 
-
+   
     child.on('message', (message) => {
         const msg = message as any;
 
@@ -76,6 +78,8 @@ const start = async () => {
         }
     });
 
+    child.send({ functionName: 'init', args: [modelName, systemPrompt, history.length >= 2 ? [history[0], history[history.length - 1]] : []] });
+    
     async function getUserInput(): Promise<string> {
         return new Promise((resolve) => {
             process.stdin.once('data', (data) => {
@@ -84,7 +88,7 @@ const start = async () => {
         });
     }
 
-    if (isServer) {
+    if (isServer && !serverRunning) {
         server.get('/api/chat', (req, res) => {
             if (child === undefined) throw new Error('Child process is not defined');
             const { prompt } = req.query;
@@ -101,6 +105,7 @@ const start = async () => {
 
         server.listen(port, ip, () => {
             console.info(`Server listening at http://${ip}:${port}`);
+            serverRunning = true;
         });
     } else {
         // #region Chat loop

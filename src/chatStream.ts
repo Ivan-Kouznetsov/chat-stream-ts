@@ -75,6 +75,8 @@ export class Chat {
             }            
         }
         
+        if (this.systemPrompt.length > 0) thisInteraction.response = thisInteraction.response.trim().replace(this.systemPrompt, '');
+
         thisInteraction.response = thisInteraction.response.trim();
         this.conversationHistory.push(thisInteraction);
         // reset session with conversation history

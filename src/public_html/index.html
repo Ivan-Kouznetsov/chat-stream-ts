@@ -1,66 +1,49 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Server</title>
+    <link id="stylesheet" rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/dark-mode-toggle.css">
     <style>
-        .bubble {
-            border-radius: 5px;
-            padding: 10px;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .speech-bubble {
-            background-color: #77afe8;
-        }
-        
-        .user-bubble {
-            background-color: #e877af;
-        }
-
-        .loader {
-            margin-left: 25px;
-            width: 10px;
-            aspect-ratio: 1;
-            border-radius: 50%;
-            animation: l5 1s infinite linear alternate;
-            margin-bottom: 10px;
-        }
-        @keyframes l5 {
-            0%  {box-shadow: 20px 0 #000, -20px 0 #0002;background: #000 }
-            33% {box-shadow: 20px 0 #000, -20px 0 #0002;background: #0002}
-            66% {box-shadow: 20px 0 #0002,-20px 0 #000; background: #0002}
-            100%{box-shadow: 20px 0 #0002,-20px 0 #000; background: #000 }
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer;
-            display: block;
-            width: 100%;            
-        }
-        input {
-            box-sizing: border-box;
-            padding: 10px 20px; 
-            border-radius: 5px;
-            display: block;
-            margin-bottom: 10px;
-            width: 100%;
+        input[type="text"]:disabled {
+            color: transparent;
         }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
+    <!-- Light/Dark Toggle -->
+    <label class="ui-switch">
+        <input type="checkbox" id="dark-mode-toggle">
+        <div class="slider">
+            <div class="circle"></div>
+        </div>
+    </label>
+    <!-- / Light/Dark Toggle -->
+
     <h1>Chat Server</h1>
     <div id="chat"></div>
     <input type="text" id="message" placeholder="Type your message here" onkeydown="handleKeyDown(event)">
     <button id="send">Send</button>
 
     <script>
+        function encodeHTML(str) {
+            var div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+
+        function toggleDarkMode() {
+            var stylesheet = document.getElementById('stylesheet');
+            if (stylesheet.getAttribute('href') === 'css/style.css') {
+                stylesheet.setAttribute('href', 'css/style.dark.css');
+            } else {
+                stylesheet.setAttribute('href', 'css/style.css');
+            }
+        }
+
         function handleKeyDown(event) {
             if (event.key === "Enter") {
                 event.preventDefault();
@@ -69,30 +52,66 @@
         }
 
         function sendMessage() {
-            $("#message").attr("disabled", true);
-            $("#send").attr("disabled", true);
-            var message = $("#message").val();
-            $("#chat").append(`<div class="bubble user-bubble">${message}</div>`);
-            $("#chat").append(`<div class="loader"></div>`);
-            $.get(`/api/chat?prompt=${message}`, function(data, status){
-                $(".loader").remove();
-                $("#chat").append(`<div class="bubble speech-bubble">${data}</div>`);
-                $("#message").val('');
-                $("#message").attr("disabled", false);
-                $("#send").attr("disabled", false);
-            }).fail(function(){
-                $(".loader").remove();
-                $("#chat").append(`<div class="bubble speech-bubble">Server error</div>`);
-                $("#message").attr("disabled", false);
-                $("#send").attr("disabled", false);
-            })
-            
+            const messageElement = document.querySelector("#message");
+            const sendElement = document.querySelector("#send");
+            const chatElement = document.querySelector("#chat");
+            const message = messageElement.value;
+
+            if (message.length === 0) {
+                return;
+            }
+
+            messageElement.disabled = true;
+            sendElement.disabled = true;            
+
+            if (!chatElement.querySelector(".loader")) {
+                chatElement.insertAdjacentHTML('beforeend', `<div class="bubble user-bubble">${message}</div>`);
+                chatElement.insertAdjacentHTML('beforeend', `<div class="loader"></div>`);
+            }
+
+            fetch(`/api/chat?prompt=${message}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw response;
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    data = encodeHTML(data).replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
+                                           .replace(/(?:\r\n|\r|\n)(?![^<]*<\/pre>)/g, '<br>');
+
+                    const loaderElement = chatElement.querySelector(".loader");
+                    if (loaderElement) {
+                        loaderElement.remove();
+                    }
+                    chatElement.insertAdjacentHTML('beforeend', `<div class="bubble speech-bubble">${data}</div>`);
+                    messageElement.value = '';
+                    messageElement.disabled = false;
+                    sendElement.disabled = false;
+                    messageElement.select();
+                })
+                .catch(error => {
+                    if (error.status === 429) {
+                        setTimeout(sendMessage, 1000); // Retry after 1 second
+                    } else {
+                        const loaderElement = chatElement.querySelector(".loader");
+                        if (loaderElement) {
+                            loaderElement.remove();
+                        }
+                        chatElement.insertAdjacentHTML('beforeend', `<div class="bubble speech-bubble">Server error</div>`);
+                        messageElement.disabled = false;
+                        sendElement.disabled = false;
+                    }
+                });
         }
 
-        $(document).ready(function(){
-            $("#send").click(sendMessage);
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector("#send").addEventListener("click", sendMessage);
+            document.querySelector("#dark-mode-toggle").addEventListener("click", toggleDarkMode);
         });
+
     </script>
-   
+
 </body>
+
 </html>
