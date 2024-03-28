@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { LlamaModel, LlamaContext, LlamaChatSession, ConversationInteraction } from 'node-llama-cpp';
-import { readSettings } from './utils';
+import { readSettings, repetitionDensity } from './utils';
 
 export class Chat {
     private modelName: string;
@@ -13,8 +13,9 @@ export class Chat {
     private stopWords: string[];
     private context: LlamaContext;
     private session: LlamaChatSession;
+    private maxDensity: number;
 
-    constructor(modelName: string, systemPrompt: string, conversationHistory: ConversationInteraction[] = []) {
+    constructor(modelName: string, systemPrompt: string, conversationHistory: ConversationInteraction[] = [], maxDensity = 0.40) {
         this.modelName = modelName;
         this.systemPrompt = systemPrompt;
         this.conversationHistory = conversationHistory;      
@@ -30,6 +31,7 @@ export class Chat {
         this.maxTokens = maxTokens;
         this.temperature = temperature;
         this.stopWords = stopWords;
+        this.maxDensity = maxDensity;
 
         if (systemPrompt.length > 0) this.stopWords.push(systemPrompt);
 
@@ -63,6 +65,12 @@ export class Chat {
                             responseAbortController.abort();
                         }
                     });
+
+                    const density = repetitionDensity(thisInteraction.response);
+                    if (density > this.maxDensity) {
+                        stop = true;
+                        responseAbortController.abort();
+                    }
                 },
                 maxTokens: this.maxTokens,
                 temperature: this.temperature,
