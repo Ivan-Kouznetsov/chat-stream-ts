@@ -7,6 +7,8 @@ import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import fs from 'fs';
+import { wordCount } from '../utils';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(dirname(__filename));
@@ -23,7 +25,7 @@ const server = express();
 server.use(express.static(path.join(__dirname, 'public_html')));
 
 const modelName = process.argv[2];
-const systemPrompt = process.argv[3];
+const systemPrompt = fs.existsSync(process.argv[3]) ? fs.readFileSync(process.argv[3], 'utf8') : process.argv[3];
 const isServer = process.argv[4] === '--server';
 const port = 3000;
 let serverRunning = false;
@@ -58,12 +60,18 @@ const start = async () => {
             history = [...msg.history];
             if (isServer && currentResponse) {
                 currentResponse.send(msg.response);
+                console.info('User: ', userInput);
+                console.info(msg.response);
+                console.info('Word Count: ', wordCount(msg.response));
+            }else{
+                console.info(msg.response);
+                process.stdout.write('\n> ');
             }
-            console.info(msg.response);
-            process.stdout.write('\n> ');
         } else if (msg === 'Initialized') {
             if (isServer) {
                 console.info(`Server listening at http://${ip}:${port}`);
+                console.info(`Model: ${modelName}`);
+                console.info(`System prompt: ${systemPrompt}`);
             } else {
                 process.stdout.write('\n> ');
             }

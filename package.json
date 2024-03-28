@@ -9,8 +9,9 @@
     "test": "export NODE_OPTIONS=\"--experimental-vm-modules\" && jest --coverage",
     "lint": "eslint ./src --ext .ts --fix",
     "prepare": "husky",
-    "server": "npm run build && cd dist && node ./controller/controller.js kimiko \"you are a friendly chat partner\" --server",
-    "chat": "npm run build && cd dist && node ./controller/controller.js kimiko \"you are a friendly chat partner\"",
+    "server": "npm run build && cd dist && node ./controller/controller.js openchat \"you are a friendly chat partner\" --server",
+    "server-prompt-file": "npm run build && cd dist && node ./controller/controller.js openchat ../system-prompt.txt --server",
+    "chat": "npm run build && cd dist && node ./controller/controller.js openchat \"you are a friendly chat partner\"",
     "int-test": "npm run build && cd dist && node single.js tinyllama \"\" \"what is 2+2?\" >> int-test.log && grep -q \"4\" int-test.log && echo \"int test OK\" || echo \"int test FAILED\"",
     "copy-files": "npx ncp src/settings.json dist/settings.json && npx ncp src/public_html dist/public_html",
     "build": "npm run clean && tsc && npm run copy-files && node updateImports.js"

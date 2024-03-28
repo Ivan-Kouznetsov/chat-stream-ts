@@ -1,19 +1,17 @@
 import { Model, Settings, DefaultSettings } from './types';
 import fs from 'fs';
 
-export const countRepeatedWords = (str: string) => {
-    const words = str.split(' ');
-    const wordCounts:{ [key: string]: number } = {};
-    let maxCount = 0;
+export const repetitionDensity = (str: string , lastWordsCount = 100) => {
+    const words = stripPunctuation(str).split(/\s+/);
+    const lastWords = words.slice(-lastWordsCount);
+    const uniqueWords = new Set(lastWords);
+    const totalWords = lastWords.length;
 
-    for (const word of words) {
-        wordCounts[word] = (wordCounts[word] || 0) + 1;
-        if (wordCounts[word] > maxCount) {
-            maxCount = wordCounts[word];
-        }
-    }
+    if (totalWords < lastWordsCount) return -1;
 
-    return maxCount - 1;
+    const repetitions = totalWords - uniqueWords.size;
+    const density = (repetitions / totalWords);
+    return density;
 };
 
 export const readModelSettingsWithDefaults = (settings: { defaults: Record<string, unknown>; models: Record<string, unknown>[]; }) => {
@@ -30,11 +28,11 @@ export const readModelSettingsWithDefaults = (settings: { defaults: Record<strin
 
     return settings;
 };
-type Validation = 
-  | { success: true; error?: never }
-  | { success: false; error: string };
+type Validation =
+    | { success: true; error?: never }
+    | { success: false; error: string };
 
-export const validateSettings = (settings: Settings): Validation => {    
+export const validateSettings = (settings: Settings): Validation => {
 
     if (typeof settings !== 'object' || settings === null) {
         return { success: false, error: 'Invalid settings object' };
@@ -73,7 +71,7 @@ export const validateSettings = (settings: Settings): Validation => {
         }
 
         if (typeof model.maxTokens !== 'undefined' && typeof model.maxTokens !== 'number') {
-            return { success: false, error: 'Invalid maxTokens' };       
+            return { success: false, error: 'Invalid maxTokens' };
         }
 
         if (typeof model.batchSize !== 'undefined' && typeof model.batchSize !== 'number') {
@@ -96,12 +94,12 @@ export const validateSettings = (settings: Settings): Validation => {
             return { success: false, error: 'Invalid topK' };
         }
 
-        if (typeof model.seed !== 'undefined' && model.seed!=null && (typeof model.seed !== 'number' || model.seed < 0)) {
+        if (typeof model.seed !== 'undefined' && model.seed != null && (typeof model.seed !== 'number' || model.seed < 0)) {
             return { success: false, error: 'Invalid seed' };
         }
 
-        if(typeof model.filePath !== 'string' || fs.existsSync(model.filePath) === false){
-            return { success: false, error: 'Invalid filePath' };        
+        if (typeof model.filePath !== 'string' || fs.existsSync(model.filePath) === false) {
+            return { success: false, error: 'Invalid filePath' };
         }
 
     }
@@ -112,16 +110,16 @@ export const validateSettings = (settings: Settings): Validation => {
 export const readSettings = (settingsText: string, modelName: string) => {
     try {
         const requiredKeys = ['contextSize', 'batchSize', 'topK', 'topP', 'maxTokens', 'temperature', 'stopWords', 'seed', 'filePath'];
-      
+
         const settings: Settings = JSON.parse(settingsText);
         const validation = validateSettings(settings);
         if (!validation.success) throw new Error(validation.error);
         const model = settings.models.find((model: { name: string; }) => model.name === modelName);
         if (!model) throw new Error(`Model not found: ${modelName}`);
-       
+
         for (const key of requiredKeys) {
-            if (model[key as keyof Model] === undefined) {                       
-                (model[key as keyof Model] as (number | string[] | null)) = settings.defaults[key as keyof DefaultSettings]; 
+            if (model[key as keyof Model] === undefined) {
+                (model[key as keyof Model] as (number | string[] | null)) = settings.defaults[key as keyof DefaultSettings];
             }
         }
 
@@ -133,13 +131,13 @@ export const readSettings = (settingsText: string, modelName: string) => {
          */
         /* istanbul ignore */
         for (const key of requiredKeys) {
-            /* istanbul ignore next */ 
+            /* istanbul ignore next */
             if (model[key as keyof Model] === undefined) {
-                /* istanbul ignore next */ 
+                /* istanbul ignore next */
                 throw new Error(`Missing required key in model: ${key}`);
             }
         }
-        
+
         //#endregion
 
         return model;
@@ -148,3 +146,7 @@ export const readSettings = (settingsText: string, modelName: string) => {
         process.exit(1);
     }
 };
+
+export const stripPunctuation = (str: string) => str.replace(/[.,/#!$%^&*;:{}=\-_`~()?]/g, '');
+
+export const wordCount = (str: string) => stripPunctuation(str).trim().split(/\s+/).filter(s => s.length > 0).length;

@@ -1,8 +1,8 @@
 # debug 
 src/chatloop.ts
 
-# todo
-todo.txt
+# txt
+*.txt
 
 # Certs
 *.pem
