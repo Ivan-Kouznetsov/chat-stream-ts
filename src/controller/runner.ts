@@ -15,7 +15,7 @@ process.on('message', (message: {functionName: string, args: never[]}) => {
         process.send?.('Initialized');      
         break;
     case 'generateResponse':
-        chat?.generateResponse(message.args[0]).then((response) => {
+        chat?.generateResponse(...(message.args as unknown as [string, number, number])).then((response) => {
             process.send?.({response, history: chat?.getConversationHistory()});
         });
         break;

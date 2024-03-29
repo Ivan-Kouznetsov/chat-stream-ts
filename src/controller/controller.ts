@@ -9,6 +9,16 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import fs from 'fs';
 import { wordCount } from '../utils';
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
+const argv = yargs(hideBin(process.argv)).options({
+    model: { type: 'string', demandOption: true },
+    systemPrompt: { type: 'string', default: 'You are a helpful assistant'},
+    server: { type: 'boolean', default: false },
+    port: { type: 'number', default: 3000},
+    timeout : { type: 'number', default: 0},
+    maxDensity: { type: 'number', default: 0.40}
+}).parseSync();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(dirname(__filename));
@@ -24,10 +34,13 @@ const ip = localIP || 'localhost';
 const server = express();
 server.use(express.static(path.join(__dirname, 'public_html')));
 
-const modelName = process.argv[2];
-const systemPrompt = fs.existsSync(process.argv[3]) ? fs.readFileSync(process.argv[3], 'utf8') : process.argv[3];
-const isServer = process.argv[4] === '--server';
-const port = 3000;
+const modelName = argv.model;
+const systemPrompt = fs.existsSync(argv.systemPrompt) ? fs.readFileSync(argv.systemPrompt, 'utf8') : argv.systemPrompt;
+const isServer = argv.server;
+const port = argv.port;
+const timeout = argv.timeout;
+const maxDensity = argv.maxDensity;
+
 let serverRunning = false;
 
 let currentResponse: Response | undefined = undefined;
@@ -107,7 +120,7 @@ const start = async () => {
                 return res.status(400).send('Invalid prompt query parameter');
             }
             currentResponse = res;
-            child.send({ functionName: 'generateResponse', args: [prompt] });  
+            child.send({ functionName: 'generateResponse', args: [prompt, maxDensity, timeout] });  
             
         });
 
@@ -124,7 +137,7 @@ const start = async () => {
                 running = false;
                 process.exit(0);
             }
-            child.send({ functionName: 'generateResponse', args: [userInput] });        
+            child.send({ functionName: 'generateResponse', args: [userInput, maxDensity, timeout] });        
         }
 
         // #endregion 

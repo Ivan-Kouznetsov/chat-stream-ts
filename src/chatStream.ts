@@ -13,9 +13,8 @@ export class Chat {
     private stopWords: string[];
     private context: LlamaContext;
     private session: LlamaChatSession;
-    private maxDensity: number;
 
-    constructor(modelName: string, systemPrompt: string, conversationHistory: ConversationInteraction[] = [], maxDensity = 0.40) {
+    constructor(modelName: string, systemPrompt: string, conversationHistory: ConversationInteraction[] = []) {
         this.modelName = modelName;
         this.systemPrompt = systemPrompt;
         this.conversationHistory = conversationHistory;      
@@ -31,7 +30,6 @@ export class Chat {
         this.maxTokens = maxTokens;
         this.temperature = temperature;
         this.stopWords = stopWords;
-        this.maxDensity = maxDensity;
 
         if (systemPrompt.length > 0) this.stopWords.push(systemPrompt);
 
@@ -44,9 +42,12 @@ export class Chat {
         this.session = new LlamaChatSession({ context: this.context, systemPrompt });
     }
 
-    public async generateResponse(userInput: string) {
+    public async generateResponse(userInput: string, maxDensity = 0.40, timelimit = 0) {
         const thisInteraction: ConversationInteraction = { prompt: userInput, response: '' };
-        const responseAbortController = new AbortController();        
+        const responseAbortController = new AbortController();
+        
+        if (timelimit > 0) setTimeout(() => responseAbortController.abort(), timelimit);
+
         let stop = false;
         try{
             await this.session.prompt(userInput, {
@@ -67,7 +68,7 @@ export class Chat {
                     });
 
                     const density = repetitionDensity(thisInteraction.response);
-                    if (density > this.maxDensity) {
+                    if (density > maxDensity) {
                         stop = true;
                         responseAbortController.abort();
                     }
