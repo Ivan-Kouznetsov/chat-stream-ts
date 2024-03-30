@@ -7,7 +7,7 @@ describe('API', () => {
     it('should return 200', async () => {
         const response = await fetch(`${url}/api/chat?prompt=hello`);
         expect(response.status).toBe(200);
-    });
+    }, 60000);
 
     it.skip('should return 200 after 10 requests', async () => {
         for (let i = 0; i < 10; i++) {

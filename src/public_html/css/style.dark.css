@@ -53,7 +53,7 @@ button {
     width: 100%;            
 }
 
-input {
+input[type=text] {
     box-sizing: border-box;
     padding: 10px 20px; 
     border-radius: 5px;
