@@ -27,8 +27,13 @@
     <div id="chat"></div>
     <input type="text" id="message" placeholder="Type your message here" onkeydown="handleKeyDown(event)">
     <button id="send">Send</button>
+    <div>
+        <input type="checkbox" id="notify-toggle"> <label for="notify-toggle">Notify me when a new message is
+            received</label>
+    </div>
 
     <script>
+
         function encodeHTML(str) {
             var div = document.createElement('div');
             div.appendChild(document.createTextNode(str));
@@ -62,7 +67,7 @@
             }
 
             messageElement.disabled = true;
-            sendElement.disabled = true;            
+            sendElement.disabled = true;
 
             if (!chatElement.querySelector(".loader")) {
                 chatElement.insertAdjacentHTML('beforeend', `<div class="bubble user-bubble">${message}</div>`);
@@ -78,7 +83,7 @@
                 })
                 .then(data => {
                     data = encodeHTML(data).replace(/```([\s\S]*?)```/g, '<pre>$1</pre>')
-                                           .replace(/(?:\r\n|\r|\n)(?![^<]*<\/pre>)/g, '<br>');
+                        .replace(/(?:\r\n|\r|\n)(?![^<]*<\/pre>)/g, '<br>');
 
                     const loaderElement = chatElement.querySelector(".loader");
                     if (loaderElement) {
@@ -89,6 +94,15 @@
                     messageElement.disabled = false;
                     sendElement.disabled = false;
                     messageElement.select();
+                    if (document.querySelector("#notify-toggle").checked && "Notification" in window && Notification.permission === "granted") {
+                        let notificationBody = data;
+                        if (notificationBody.length > 150) {
+                            notificationBody = notificationBody.substring(0, 147) + "...";
+                        }
+                        new Notification("New message received", {
+                            body: notificationBody
+                        });
+                    }
                 })
                 .catch(error => {
                     if (error.status === 429) {
@@ -108,6 +122,24 @@
         document.addEventListener("DOMContentLoaded", function () {
             document.querySelector("#send").addEventListener("click", sendMessage);
             document.querySelector("#dark-mode-toggle").addEventListener("click", toggleDarkMode);
+
+            document.querySelector("#notify-toggle").addEventListener("click", function () {
+                console.log("here");
+                if (document.querySelector("#notify-toggle").checked) {
+                    if (!("Notification" in window)) {
+                        alert("This browser does not support desktop notification");
+                        document.querySelector("#notify-toggle").setAttribute("display", "none");
+                    } else if (Notification.permission !== "denied") {
+                        Notification.requestPermission().then(function (permission) {
+                            if (permission === "granted") {
+                                console.log("Notifications are now enabled");
+                            }
+                        });
+                    } else if (Notification.permission === "denied"){
+                        alert("You have blocked notifications :(");
+                    }
+                }
+            });
         });
 
     </script>

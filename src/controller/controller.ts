@@ -17,7 +17,8 @@ const argv = yargs(hideBin(process.argv)).options({
     server: { type: 'boolean', default: false },
     port: { type: 'number', default: 3000},
     timeout : { type: 'number', default: 0},
-    maxDensity: { type: 'number', default: 0.40}
+    maxDensity: { type: 'number', default: 0.40},
+    useLocalIp: { type: 'boolean', default: false}
 }).parseSync();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,7 +30,11 @@ if (!networkInterfaces) {
 }
 
 const localIP = (process.platform === 'darwin' ? networkInterfaces['en0'] : networkInterfaces['eth0'])?.filter((details) => details.family === 'IPv4')[0]?.address;
-const ip = localIP || 'localhost';
+if (!localIP) {
+    throw new Error('Unable to get local IP');
+}
+
+const ip = argv.useLocalIp ? localIP : 'localhost';
 
 const server = express();
 server.use(express.static(path.join(__dirname, 'public_html')));
