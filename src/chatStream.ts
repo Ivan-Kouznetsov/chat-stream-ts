@@ -21,7 +21,7 @@ export class Chat {
 
         const { contextSize, batchSize, topK, topP, maxTokens, temperature, stopWords, seed, filePath: modelPath } = readSettings(fs.readFileSync('settings.json', 'utf8'), modelName);
        
-        if (!contextSize || !batchSize || !topK || !topP || !maxTokens || !temperature || !stopWords || !modelPath) {
+        if (!contextSize || !batchSize || !topK || !topP || !maxTokens || typeof temperature === 'undefined' || !stopWords || !modelPath) {
             throw new Error('One or more required variables are undefined.');
         }
         

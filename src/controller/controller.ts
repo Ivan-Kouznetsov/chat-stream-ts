@@ -31,10 +31,9 @@ if (!networkInterfaces) {
 
 const localIP = (process.platform === 'darwin' ? networkInterfaces['en0'] : networkInterfaces['eth0'])?.filter((details) => details.family === 'IPv4')[0]?.address;
 if (!localIP) {
-    throw new Error('Unable to get local IP');
+    throw new Error('Unable to get local IP address');
 }
-
-const ip = argv.useLocalIp ? localIP : 'localhost';
+const ipAddresses = ['localhost', localIP]; 
 
 const server = express();
 server.use(express.static(path.join(__dirname, 'public_html')));
@@ -87,7 +86,7 @@ const start = async () => {
             }
         } else if (msg === 'Initialized') {
             if (isServer) {
-                console.info(`Server listening at http://${ip}:${port}`);
+                console.info(`Server listening at ${ipAddresses.map((address) => `http://${address}:${port}`).join(', ')}`);
                 console.info(`Model: ${modelName}`);
                 console.info(`System prompt: ${systemPrompt}`);
             } else {
@@ -128,11 +127,23 @@ const start = async () => {
             child.send({ functionName: 'generateResponse', args: [prompt, maxDensity, timeout] });  
             
         });
-
-        server.listen(port, ip, () => {
-            console.info(`Server listening at http://${ip}:${port}`);
-            serverRunning = true;
+        
+        const serverPromises = ipAddresses.map((address) => {
+            return new Promise<void>((resolve) => {
+                server.listen(port, address, () => {
+                    console.info(`Server listening at http://${address}:${port}`);
+                    resolve();                    
+                });
+            });
         });
+
+        Promise.all(serverPromises)
+            .then(() => {
+                serverRunning = true;
+            })
+            .catch((error) => {
+                console.error('Failed to start server:', error);
+            });
     } else {
         // #region Chat loop
         while (running) {
