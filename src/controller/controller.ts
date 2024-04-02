@@ -47,6 +47,7 @@ const timeout = argv.timeout;
 const maxDensity = argv.maxDensity;
 
 const modelSettings = readSettings(fs.readFileSync('settings.json', 'utf8'), modelName);
+if (modelSettings.seed === null) modelSettings.seed = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 
 let serverRunning = false;
 
@@ -88,6 +89,7 @@ const start = async () => {
                 process.stdout.write('\n> ');
             }
         } else if (msg === 'Initialized') {
+            console.info('Seed: ', modelSettings.seed);
             if (isServer) {
                 console.info(`Server listening at ${ipAddresses.map((address) => `http://${address}:${port}`).join(', ')}`);
                 console.info(`Model: ${modelName}`);
