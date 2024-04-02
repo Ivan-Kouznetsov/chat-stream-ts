@@ -12,14 +12,14 @@ export interface DefaultSettings {
 export interface Model {
     name: string;
     filePath: string;
-    stopWords?: string[];
-    maxTokens?: number;
-    batchSize?: number;
-    contextSize?: number;
-    temperature?: number;
-    topP?: number;
-    topK?: number;
-    seed?: null | number;
+    stopWords: string[];
+    maxTokens: number;
+    batchSize: number;
+    contextSize: number;
+    temperature: number;
+    topP: number;
+    topK: number;
+    seed: null | number;
 }
 
 export interface Settings {

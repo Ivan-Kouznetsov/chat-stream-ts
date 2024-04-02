@@ -1,11 +1,12 @@
 
 import { Chat } from '../chatStream';
 import { ConversationInteraction } from 'node-llama-cpp';
+import { Model } from '../types';
 
 let chat:Chat | undefined = undefined;
 
-export const init = (modelName:string, systemPrompt:string, conversationHistory: ConversationInteraction[] = [] ) => {
-    chat = new Chat(modelName, systemPrompt, conversationHistory);
+export const init = (model:Model, systemPrompt:string, conversationHistory: ConversationInteraction[] = [] ) => {
+    chat = new Chat({...model, modelName:model.name, systemPrompt, conversationHistory});
 };
 
 process.on('message', (message: {functionName: string, args: never[]}) => {
@@ -19,5 +20,6 @@ process.on('message', (message: {functionName: string, args: never[]}) => {
             process.send?.({response, history: chat?.getConversationHistory()});
         });
         break;
+    default: throw new Error(`Invalid function name: ${message.functionName}`);
     }    
 });

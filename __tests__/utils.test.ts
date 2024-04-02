@@ -28,20 +28,20 @@ describe('Utils tests', () => {
         });
 
         it('should return a positive value for long text passage', () => {
-            const densities:number[] = [];
+            const densities: number[] = [];
             for (let i = 0; i < repeat.length; i++) {
                 densities.push(repetitionDensity(repeat.substring(0, i)));
             }
-            
+
             expect(Math.max(...densities)).toBe(0.42);
         });
 
         it('should return a high value for very repetitive passage', () => {
-            const densities:number[] = [];
+            const densities: number[] = [];
             for (let i = 0; i < life.length; i++) {
                 densities.push(repetitionDensity(life.substring(0, i)));
             }
-            
+
             expect(Math.max(...densities)).toBe(0.79);
         });
     });
@@ -143,7 +143,7 @@ describe('Utils tests', () => {
 
         it('should return error if settings object is invalid', () => {
             const settings = null;
-            // @ts-expect-error intentionally using invalid settings for this test 
+
             expect(validateSettings(settings)).toEqual({ success: false, error: 'Invalid settings object' });
         });
 
@@ -168,7 +168,6 @@ describe('Utils tests', () => {
                 ]
             };
 
-            // @ts-expect-error intentionally using invalid settings for this test
             expect(validateSettings(settings)).toEqual({ success: false, 'error': 'Invalid defaultModel' });
         });
 
@@ -184,7 +183,6 @@ describe('Utils tests', () => {
                 ]
             };
 
-            // @ts-expect-error intentionally using invalid settings for this test
             expect(validateSettings(settings)).toEqual({ success: false, 'error': 'Invalid defaults object' });
         });
 
@@ -209,7 +207,6 @@ describe('Utils tests', () => {
                 ]
             };
 
-            // @ts-expect-error intentionally using invalid settings for this test
             expect(validateSettings(settings)).toEqual({ success: false, 'error': 'Missing default key: contextSize' });
         });
 
@@ -229,7 +226,6 @@ describe('Utils tests', () => {
                 models: 'model1'
             };
 
-            // @ts-expect-error intentionally using invalid settings for this test
             expect(validateSettings(settings)).toEqual({ success: false, 'error': 'Invalid models array' });
         });
 
@@ -261,7 +257,7 @@ describe('Utils tests', () => {
                     }
                 ]
             };
-            
+
             // @ts-expect-error intentionally using invalid settings for this test
             settings.models[0][key] = Symbol('invalid');
             const result = validateSettings(settings);
@@ -288,7 +284,6 @@ describe('Utils tests', () => {
                 ]
             };
 
-            // @ts-expect-error intentionally using invalid settings for this test
             const result = validateSettings(settings);
 
             expect(result.success).toEqual(false);

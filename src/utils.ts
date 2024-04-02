@@ -32,7 +32,8 @@ type Validation =
     | { success: true; error?: never }
     | { success: false; error: string };
 
-export const validateSettings = (settings: Settings): Validation => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const validateSettings = (settings: any): Validation => {
 
     if (typeof settings !== 'object' || settings === null) {
         return { success: false, error: 'Invalid settings object' };
