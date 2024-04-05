@@ -58,7 +58,6 @@ export class Chat {
     public async generateResponse(userInput: string, maxDensity = 0.40, timelimit = 0) {
         const thisInteraction: ConversationInteraction = { prompt: userInput, response: '' };
         const responseAbortController = new AbortController();
-
         if (timelimit > 0) setTimeout(() => responseAbortController.abort(), timelimit);
 
         let stop = false;
@@ -93,7 +92,7 @@ export class Chat {
             });
         } catch {
             if (process.env.NODE_ENV === 'development') {
-                console.log('Response generation aborted');
+                console.info('Response generation aborted');
             }
         }
 

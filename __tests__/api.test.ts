@@ -11,7 +11,7 @@ describe('API', () => {
 
     it.skip('should return 200 after 10 requests', async () => {
         for (let i = 0; i < 10; i++) {
-            console.log(`${Date.now()} Request ${i}`);
+            console.info(`${Date.now()} Request ${i}`);
             const prompt = encodeURIComponent('write a story about a cat and a dog');
             const response = await fetch(`${url}/api/chat?prompt=${prompt}`);
             const responseBody = await response.text();

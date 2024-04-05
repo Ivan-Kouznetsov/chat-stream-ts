@@ -17,5 +17,5 @@ import fs from 'fs';
     const chat = new Chat({...model, modelName:model.name, systemPrompt, conversationHistory:[]});
 
     const lastResponse = await chat.generateResponse(userInput);
-    console.log(lastResponse);
+    console.info(lastResponse);
 })();
