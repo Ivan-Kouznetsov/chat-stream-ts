@@ -16,8 +16,11 @@ process.on('message', (message: {functionName: string, args: never[]}) => {
         process.send?.('Initialized');      
         break;
     case 'generateResponse':
-        chat?.generateResponse(...(message.args as unknown as [string, number, number])).then((response) => {
-            process.send?.({response, history: chat?.getConversationHistory()});
+        if (!chat) throw new Error('Chat is not initialized');        
+
+        chat.generateResponse(...(message.args as unknown as [string, number, number])).then((response) => {
+            if (process.send === undefined) throw new Error('process.send is undefined');
+            process.send({response, history: chat?.getConversationHistory()});
         });
         break;
     default: throw new Error(`Invalid function name: ${message.functionName}`);

@@ -15,4 +15,4 @@ allDependencies.forEach((version) => {
     }
 });
 
-console.log('All version strings are exact.');
+console.info('All version strings are exact.');

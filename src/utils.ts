@@ -143,7 +143,7 @@ export const readSettings = (settingsText: string, modelName: string) => {
 
         return model;
     } catch (e) {
-        console.log('Error reading settings.json', e);
+        console.error('Error reading settings.json', e);
         process.exit(1);
     }
 };
